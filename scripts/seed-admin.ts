@@ -1,9 +1,5 @@
-import { config } from 'dotenv';
 import connectDB from '../lib/mongodb';
 import Admin from '../models/Admin';
-
-// Load environment variables
-config({ path: '.env.local' });
 
 async function seedAdmin() {
   try {

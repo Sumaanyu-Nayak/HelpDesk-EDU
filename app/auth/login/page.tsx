@@ -4,31 +4,32 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
-import { GraduationCap, LogIn } from 'lucide-react';
+import { GraduationCap } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+const BarcodeScanner = dynamic(() => import('../../../components/BarcodeScanner'), { ssr: false });
 
 export default function LoginPage() {
-  const [registrationNo, setRegistrationNo] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [scannedCode, setScannedCode] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleBarcodeDetected = async (code: string) => {
+    if (isLoading) return; // Prevent multiple simultaneous login attempts
     
-    if (!registrationNo.trim()) {
-      toast.error('Please enter your registration number');
-      return;
-    }
-
+    setScannedCode(code);
     setIsLoading(true);
 
     try {
+      toast.loading('Logging in...', { id: 'login' });
+      
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          registrationNo: registrationNo.trim(),
+          registrationNo: code.trim().toUpperCase(),
         }),
       });
 
@@ -37,13 +38,15 @@ export default function LoginPage() {
       if (response.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('student', JSON.stringify(data.student));
-        toast.success('Login successful!');
+        toast.success('Login successful!', { id: 'login' });
         router.push('/dashboard');
       } else {
-        toast.error(data.error || 'Login failed');
+        toast.error(data.error || 'Login failed. Please try scanning again.', { id: 'login' });
+        setScannedCode('');
       }
     } catch (error) {
-      toast.error('Something went wrong. Please try again.');
+      toast.error('Something went wrong. Please try scanning again.', { id: 'login' });
+      setScannedCode('');
     } finally {
       setIsLoading(false);
     }
@@ -60,41 +63,45 @@ export default function LoginPage() {
             Student Login
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Enter your registration number from your ID card
+            Scan your student ID barcode to login instantly
           </p>
         </div>
 
-        <form className="mt-8 space-y-6 bg-white p-8 rounded-lg shadow-md" onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="registrationNo" className="block text-sm font-medium text-gray-700 mb-2">
-              Registration Number
-            </label>
-            <input
-              id="registrationNo"
-              name="registrationNo"
-              type="text"
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your registration number"
-              value={registrationNo}
-              onChange={(e) => setRegistrationNo(e.target.value.toUpperCase())}
-            />
+        <div className="bg-white p-8 rounded-lg shadow-md">
+          {scannedCode && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md">
+              <p className="text-sm text-green-800">
+                <span className="font-medium">Scanned ID:</span> {scannedCode}
+              </p>
+            </div>
+          )}
+          
+          <div className="space-y-4">
+            <div className="text-center">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                {isLoading ? 'Logging you in...' : 'Position your ID card in the camera'}
+              </h3>
+              
+              {!isLoading && (
+                <BarcodeScanner onDetected={handleBarcodeDetected} />
+              )}
+              
+              {isLoading && (
+                <div className="flex flex-col items-center justify-center h-48 bg-gray-50 rounded-lg border">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                  <p className="mt-4 text-gray-600">Processing login...</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="text-center">
+              <p className="text-xs text-gray-500">
+                Make sure your student ID barcode is clearly visible and well-lit
+              </p>
+            </div>
           </div>
 
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                <LogIn className="h-5 w-5 text-blue-500 group-hover:text-blue-400" />
-              </span>
-              {isLoading ? 'Signing in...' : 'Sign in'}
-            </button>
-          </div>
-
-          <div className="text-center">
+          <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{' '}
               <Link href="/auth/register" className="font-medium text-blue-600 hover:text-blue-500">
@@ -102,7 +109,7 @@ export default function LoginPage() {
               </Link>
             </p>
           </div>
-        </form>
+        </div>
 
         <div className="text-center">
           <Link
