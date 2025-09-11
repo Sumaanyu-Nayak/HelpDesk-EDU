@@ -74,8 +74,8 @@ A comprehensive digital complaint management system built with Next.js and Mongo
    
    Create a `.env.local` file in the root directory:
    ```env
-   MONGODB_URI=mongodb+srv://nayaksumaanyu:purupia123@cluster0.5deqr.mongodb.net/helpdesk_edu?retryWrites=true&w=majority&appName=Cluster0
-   JWT_SECRET=your-super-secret-jwt-key-here-change-in-production
+   MONGODB_URI=""
+   JWT_SECRET=""
    ```
 
 4. **Start the development server**
