@@ -120,12 +120,6 @@ export default function AdminLoginPage() {
               {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
-
-          <div className="text-center">
-            <p className="text-xs text-gray-500">
-              Default: username: admin, password: admin123
-            </p>
-          </div>
         </form>
 
         <div className="text-center">

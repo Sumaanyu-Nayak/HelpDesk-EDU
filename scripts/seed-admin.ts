@@ -1,5 +1,10 @@
+import { config } from 'dotenv';
+import { join } from 'path';
 import connectDB from '../lib/mongodb';
 import Admin from '../models/Admin';
+
+// Load environment variables from .env.local
+config({ path: join(process.cwd(), '.env.local') });
 
 async function seedAdmin() {
   try {
@@ -24,26 +29,40 @@ async function seedAdmin() {
       password: 'admin123', // This will be hashed automatically
       role: 'super_admin',
       serviceIds: [
-        'laundry service',
-        'thapa mess',
-        'abc mess',
-        'gym service',
+        // Shops
+        'food_court',
+        'oac',
+        'juice_shop',
+        'thapa_grocery_shop',
+        'ice_cream_parlour',
+        'stationary_shop',
+        'acad_xerox',
+        'pizza_shop',
+        // College Services
         'barber',
-        'girls mess',
-        'girls gym',
-        'food court',
-        'open air cafeteria',
-        'stationary',
-        'juice shop',
-        'general store',
-        'pizza shop',
-        'abdul kalam hostel',
-        'vishveshwaria hostel',
-        'gurbir hostel',
-        'kalpana chawla hostel',
-        'mess side hostel',
-        'library',
-        'nand hostel',
+        'boys_gym',
+        'girls_gym',
+        'laundry',
+        // Mess
+        'prithivi_mess',
+        'thapa_mess',
+        'kanika_mess',
+        // Hostel
+        'visveshwariya_hostel',
+        'sarabhai_hostel',
+        'gurbir_singh_hostel',
+        'homi_bhaba_hostel',
+        'dorm_hostel',
+        'sn_bose_hostel',
+        'kalpana_chawla_hostel',
+        // Sports
+        'cricket_ground',
+        'football_ground',
+        'badminton_court',
+        'tennis_court',
+        'squash_court',
+        'basketball_court',
+        'volley_ball_court',
       ],
     });
 

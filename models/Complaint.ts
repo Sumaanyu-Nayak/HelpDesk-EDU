@@ -1,4 +1,5 @@
 import mongoose, { Schema, model, models } from 'mongoose';
+import { SERVICES } from '@/types';
 
 const ComplaintSchema = new Schema({
   student: {
@@ -22,30 +23,7 @@ const ComplaintSchema = new Schema({
     type: String,
     required: true,
     trim: true,
-    enum: [
-      'laundry service',
-      'thapa mess',
-      'abc mess',
-      'gym service',
-      'barber',
-      'girls mess',
-      'girls gym',
-      'food court',
-      'open air cafeteria',
-      'stationary morning',
-      'stationary evening',
-      'juice shop',
-      'general store',
-      'pizza shop',
-      'abdul kalam hostel',
-      'vishveshwaria hostel',
-      'gurbir hostel',
-      'kalpana chawla hostel',
-      'mess side hostel',
-      'be-hostel',
-      'library',
-      'nand hostel',
-    ],
+    enum: SERVICES.map(service => service.id),
   },
   status: {
     type: String,

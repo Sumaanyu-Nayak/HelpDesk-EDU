@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { GraduationCap, MessageSquare, Users, Shield } from 'lucide-react';
+import { SERVICES } from '@/types';
 
 export default function HomePage() {
   return (
@@ -41,7 +42,7 @@ export default function HomePage() {
           </h2>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             Submit and track complaints for all college services including hostels, 
-            mess facilities, gym, library, and more. Quick, efficient, and transparent.
+            mess facilities, shops, sports facilities, and more. Quick, efficient, and transparent.
           </p>
           <div className="flex justify-center space-x-4">
             <Link
@@ -79,7 +80,7 @@ export default function HomePage() {
                 Easy Complaint Submission
               </h4>
               <p className="text-gray-600">
-                Submit complaints for hostels, mess, gym, library, and 20+ other services
+                Submit complaints for hostels, mess, gym, shops, sports facilities, and 29 other services
               </p>
             </div>
             
@@ -116,15 +117,9 @@ export default function HomePage() {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {[
-              'Laundry Service', 'Thapa Mess', 'ABC Mess', 'Girls Mess',
-              'Gym Service', 'Girls Gym', 'Barber', 'Food Court',
-              'Open Air Cafeteria', 'Stationary', 'Juice Shop', 'General Store',
-              'Pizza Shop', 'Abdul Kalam Hostel', 'Vishveshwaria Hostel', 'Gurbir Hostel',
-              'Kalpana Chawla Hostel', 'Mess Side Hostel', 'Nand Hostel', 'Library'
-            ].map((service, index) => (
-              <div key={index} className="bg-white p-4 rounded-lg shadow-sm text-center">
-                <p className="text-sm font-medium text-gray-700">{service}</p>
+            {SERVICES.map((service, index) => (
+              <div key={service.id} className="bg-white p-4 rounded-lg shadow-sm text-center">
+                <p className="text-sm font-medium text-gray-700">{service.name}</p>
               </div>
             ))}
           </div>
@@ -134,7 +129,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p>&copy; 2024 HelpDesk EDU. All rights reserved.</p>
+          <p>&copy; 2025 HelpDesk EDU. All rights reserved.</p>
         </div>
       </footer>
     </div>

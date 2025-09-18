@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
+import { SERVICES } from '../../types';
 import { 
   Plus, 
   FileText, 
@@ -39,6 +40,25 @@ interface Complaint {
 }
 
 export default function DashboardPage() {
+  // Category definitions
+  const CATEGORIES = [
+    { id: 'shops', name: 'Shops' },
+    { id: 'college_services', name: 'College Services' },
+    { id: 'mess', name: 'Mess' },
+    { id: 'hostel', name: 'Hostel' },
+    { id: 'sports', name: 'Sports' },
+  ];
+
+  // Helper function to get services by category
+  const getServicesByCategory = (category: string) => {
+    return SERVICES.filter(service => service.category === category);
+  };
+
+  // Helper function to get category display name
+  const getCategoryDisplayName = (categoryId: string) => {
+    return CATEGORIES.find(cat => cat.id === categoryId)?.name || '';
+  };
+
   const [student, setStudent] = useState<Student | null>(null);
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -48,6 +68,7 @@ export default function DashboardPage() {
   const router = useRouter();
 
   const [newComplaint, setNewComplaint] = useState({
+    category: '',
     service: '',
     title: '',
     description: '',
@@ -89,6 +110,14 @@ export default function DashboardPage() {
     }
   };
 
+  const handleCategoryChange = (category: string) => {
+    setNewComplaint(prev => ({
+      ...prev,
+      category,
+      service: '', // Reset service when category changes
+    }));
+  };
+
   const handleSubmitComplaint = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -111,6 +140,7 @@ export default function DashboardPage() {
       if (response.ok) {
         toast.success('Complaint submitted successfully!');
         setNewComplaint({
+          category: '',
           service: '',
           title: '',
           description: '',
@@ -273,28 +303,15 @@ export default function DashboardPage() {
               className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Services</option>
-              <option value="laundry service">Laundry Service</option>
-              <option value="thapa mess">Thapa Mess</option>
-              <option value="abc mess">ABC Mess</option>
-              <option value="gym service">Gym Service</option>
-              <option value="barber">Barber</option>
-              <option value="girls mess">Girls Mess</option>
-              <option value="girls gym">Girls Gym</option>
-              <option value="food court">Food Court</option>
-              <option value="open air cafeteria">Open Air Cafeteria</option>
-              <option value="stationary morning">Stationary Morning</option>
-              <option value="stationary evening">Stationary Evening</option>
-              <option value="juice shop">Juice Shop</option>
-              <option value="general store">General Store</option>
-              <option value="pizza shop">Pizza Shop</option>
-              <option value="abdul kalam hostel">Abdul Kalam Hostel</option>
-              <option value="vishveshwaria hostel">Vishveshwaria Hostel</option>
-              <option value="gurbir hostel">Gurbir Hostel</option>
-              <option value="kalpana chawla hostel">Kalpana Chawla Hostel</option>
-              <option value="mess side hostel">Mess Side Hostel</option>
-              <option value="be-hostel">BE Hostel</option>
-              <option value="library">Library</option>
-              <option value="nand hostel">Nand Hostel</option>
+              {['shops', 'college_services', 'mess', 'hostel', 'sports'].map(category => (
+                <optgroup key={category} label={getCategoryDisplayName(category)}>
+                  {getServicesByCategory(category).map(service => (
+                    <option key={service.id} value={service.id}>
+                      {service.name}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
             </select>
           </div>
         </div>
@@ -375,6 +392,25 @@ export default function DashboardPage() {
               <form onSubmit={handleSubmitComplaint} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Category *
+                  </label>
+                  <select
+                    value={newComplaint.category}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  >
+                    <option value="">Select a category</option>
+                    {CATEGORIES.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Service *
                   </label>
                   <select
@@ -382,30 +418,16 @@ export default function DashboardPage() {
                     onChange={(e) => setNewComplaint(prev => ({ ...prev, service: e.target.value }))}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
+                    disabled={!newComplaint.category}
                   >
-                    <option value="">Select a service</option>
-                    <option value="laundry service">Laundry Service</option>
-                    <option value="thapa mess">Thapa Mess</option>
-                    <option value="abc mess">ABC Mess</option>
-                    <option value="gym service">Gym Service</option>
-                    <option value="barber">Barber</option>
-                    <option value="girls mess">Girls Mess</option>
-                    <option value="girls gym">Girls Gym</option>
-                    <option value="food court">Food Court</option>
-                    <option value="open air cafeteria">Open Air Cafeteria</option>
-                    <option value="stationary morning">Stationary Morning</option>
-                    <option value="stationary evening">Stationary Evening</option>
-                    <option value="juice shop">Juice Shop</option>
-                    <option value="general store">General Store</option>
-                    <option value="pizza shop">Pizza Shop</option>
-                    <option value="abdul kalam hostel">Abdul Kalam Hostel</option>
-                    <option value="vishveshwaria hostel">Vishveshwaria Hostel</option>
-                    <option value="gurbir hostel">Gurbir Hostel</option>
-                    <option value="kalpana chawla hostel">Kalpana Chawla Hostel</option>
-                    <option value="mess side hostel">Mess Side Hostel</option>
-                    <option value="be-hostel">BE Hostel</option>
-                    <option value="library">Library</option>
-                    <option value="nand hostel">Nand Hostel</option>
+                    <option value="">
+                      {newComplaint.category ? 'Select a service' : 'Please select a category first'}
+                    </option>
+                    {newComplaint.category && getServicesByCategory(newComplaint.category).map((service) => (
+                      <option key={service.id} value={service.name.toLowerCase()}>
+                        {service.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 

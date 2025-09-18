@@ -16,6 +16,7 @@ import {
   RefreshCw,
   Download,
 } from 'lucide-react';
+import { SERVICES } from '@/types';
 
 interface Complaint {
   _id: string;
@@ -43,31 +44,6 @@ interface PaginationInfo {
   hasNextPage: boolean;
   hasPrevPage: boolean;
 }
-
-const SERVICES = [
-  'laundry service',
-  'thapa mess',
-  'abc mess',
-  'gym service',
-  'barber',
-  'girls mess',
-  'girls gym',
-  'food court',
-  'open air cafeteria',
-  'stationary morning',
-  'stationary evening',
-  'juice shop',
-  'general store',
-  'pizza shop',
-  'abdul kalam hostel',
-  'vishveshwaria hostel',
-  'gurbir hostel',
-  'kalpana chawla hostel',
-  'mess side hostel',
-  'be-hostel',
-  'library',
-  'nand hostel',
-];
 
 export default function AdminComplaintsPage() {
   const [complaints, setComplaints] = useState<Complaint[]>([]);
@@ -289,8 +265,8 @@ export default function AdminComplaintsPage() {
               >
                 <option value="all">All Services</option>
                 {SERVICES.map((service) => (
-                  <option key={service} value={service}>
-                    {service}
+                  <option key={service.id} value={service.id}>
+                    {service.name}
                   </option>
                 ))}
               </select>

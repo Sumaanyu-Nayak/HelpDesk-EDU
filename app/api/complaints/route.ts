@@ -3,6 +3,7 @@ import connectDB from '@/lib/mongodb';
 import Complaint from '@/models/Complaint';
 import Student from '@/models/Student';
 import jwt from 'jsonwebtoken';
+import { SERVICES } from '@/types';
 
 // Helper function to verify JWT token
 function verifyToken(token: string) {
@@ -91,13 +92,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate service exists in the allowed services
-    const allowedServices = [
-      'laundry service', 'thapa mess', 'abc mess', 'gym service', 'barber',
-      'girls mess', 'girls gym', 'food court', 'open air cafeteria',
-      'stationary morning', 'stationary evening', 'juice shop', 'general store', 'pizza shop',
-      'abdul kalam hostel', 'vishveshwaria hostel', 'gurbir hostel',
-      'kalpana chawla hostel', 'mess side hostel', 'be-hostel', 'library', 'nand hostel'
-    ];
+    const allowedServices = SERVICES.map(service => service.id);
     
     if (!allowedServices.includes(service.toLowerCase())) {
       return NextResponse.json(

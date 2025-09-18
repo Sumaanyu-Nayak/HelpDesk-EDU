@@ -5,7 +5,7 @@ A comprehensive digital complaint management system built with Next.js and Mongo
 ## Features
 
 - **Student Authentication**: Login using registration number from ID card barcode
-- **Comprehensive Service Coverage**: 20+ college services including hostels, mess, gym, library, etc.
+- **Comprehensive Service Coverage**: 29 college services organized into 5 categories: shops, college services, mess, hostels, and sports facilities.
 - **Real-time Complaint Tracking**: Track complaint status from submission to resolution
 - **Priority Management**: Categorize complaints by priority (low, medium, high, urgent)
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
@@ -13,33 +13,44 @@ A comprehensive digital complaint management system built with Next.js and Mongo
 
 ## Services Covered
 
-### Food Services
-- Thapa Mess
-- ABC Mess
-- Girls Mess
+### Shops (8 services)
 - Food Court
-- Open Air Cafeteria
+- OAC (Open Air Cafeteria)
 - Juice Shop
+- Thapa Grocery Shop
+- Ice Cream Parlour
+- Stationary Shop
+- Acad Xerox
 - Pizza Shop
 
-### Accommodation
-- Abdul Kalam Hostel
-- Vishveshwaria Hostel
-- Gurbir Hostel
-- Kalpana Chawla Hostel
-- Mess Side Hostel
-- Nand Hostel
-
-### Facilities
-- Laundry Service
-- Gym Service
-- Girls Gym
+### College Services (4 services)
 - Barber
-- Stationary
-- General Store
+- Boys Gym
+- Girls Gym
+- Laundry
 
-### Academic
-- Library
+### Mess (3 services)
+- Prithivi Mess
+- Thapa Mess
+- Kanika Mess
+
+### Hostels (8 services)
+- Visveshwariya Hostel
+- Sarabhai Hostel
+- Gurbir Singh Hostel
+- Homi Bhaba Hostel
+- Dorm Hostel
+- SN Bose Hostel
+- Kalpana Chawla Hostel
+
+### Sports Facilities (6 services)
+- Cricket Ground
+- Football Ground
+- Badminton Court
+- Tennis Court
+- Squash Court
+- Basketball Court
+- Volley Ball Court
 
 ## Tech Stack
 
