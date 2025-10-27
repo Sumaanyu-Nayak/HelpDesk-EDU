@@ -168,6 +168,12 @@ export default function AdminComplaintsPage() {
     }
   };
 
+  // Helper function to get service name by ID
+  const getServiceDisplayName = (serviceId: string) => {
+    const service = SERVICES.find(s => s.id === serviceId);
+    return service ? service.name : serviceId;
+  };
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
@@ -346,8 +352,8 @@ export default function AdminComplaintsPage() {
                         <div className="text-sm text-gray-500">{complaint.student.registrationNo}</div>
                         <div className="text-xs text-gray-400">{complaint.student.hostel}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
-                        {complaint.service}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {getServiceDisplayName(complaint.service)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(complaint.priority)}`}>

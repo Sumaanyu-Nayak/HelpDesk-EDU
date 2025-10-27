@@ -15,7 +15,9 @@ import {
   Search,
   Filter,
   MessageSquare,
-  Calendar
+  Calendar,
+  Trash2,
+  Edit
 } from 'lucide-react';
 
 interface Student {
@@ -59,6 +61,12 @@ export default function DashboardPage() {
     return CATEGORIES.find(cat => cat.id === categoryId)?.name || '';
   };
 
+  // Helper function to get service name by ID
+  const getServiceDisplayName = (serviceId: string) => {
+    const service = SERVICES.find(s => s.id === serviceId);
+    return service ? service.name : serviceId;
+  };
+
   const [student, setStudent] = useState<Student | null>(null);
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -70,6 +78,14 @@ export default function DashboardPage() {
   const [newComplaint, setNewComplaint] = useState({
     category: '',
     service: '',
+    title: '',
+    description: '',
+    priority: 'medium' as const,
+  });
+
+  const [editingComplaint, setEditingComplaint] = useState<any>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState({
     title: '',
     description: '',
     priority: 'medium' as const,
@@ -151,6 +167,73 @@ export default function DashboardPage() {
       } else {
         const data = await response.json();
         toast.error(data.error || 'Failed to submit complaint');
+      }
+    } catch (error) {
+      toast.error('Something went wrong');
+    }
+  };
+
+  const handleDeleteComplaint = async (complaintId: string) => {
+    if (!window.confirm('Are you sure you want to delete this complaint? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/complaints/${complaintId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        toast.success('Complaint deleted successfully!');
+        fetchComplaints(); // Refresh the complaints list
+      } else {
+        const data = await response.json();
+        toast.error(data.error || 'Failed to delete complaint');
+      }
+    } catch (error) {
+      toast.error('Something went wrong');
+    }
+  };
+
+  const handleEditComplaint = (complaint: any) => {
+    setEditingComplaint(complaint);
+    setEditForm({
+      title: complaint.title,
+      description: complaint.description,
+      priority: complaint.priority,
+    });
+    setShowEditModal(true);
+  };
+
+  const handleUpdateComplaint = async () => {
+    if (!editForm.title || !editForm.description) {
+      toast.error('Title and description are required');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/complaints/${editingComplaint._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(editForm),
+      });
+
+      if (response.ok) {
+        toast.success('Complaint updated successfully!');
+        setShowEditModal(false);
+        setEditingComplaint(null);
+        fetchComplaints(); // Refresh the complaints list
+      } else {
+        const data = await response.json();
+        toast.error(data.error || 'Failed to update complaint');
       }
     } catch (error) {
       toast.error('Something went wrong');
@@ -336,15 +419,33 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">
                       {complaint.title}
                     </h3>
-                    <p className="text-sm text-gray-600 capitalize">{complaint.service}</p>
+                    <p className="text-sm text-gray-600">{getServiceDisplayName(complaint.service)}</p>
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="flex items-center space-x-2">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(complaint.status)}`}>
                       {complaint.status.replace('-', ' ')}
                     </span>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(complaint.priority)}`}>
                       {complaint.priority}
                     </span>
+                    {complaint.status === 'pending' && (
+                      <>
+                        <button
+                          onClick={() => handleEditComplaint(complaint)}
+                          className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-full transition-colors"
+                          title="Edit complaint"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteComplaint(complaint._id)}
+                          className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
+                          title="Delete complaint"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
                 <p className="text-gray-700 mb-4">{complaint.description}</p>
@@ -424,7 +525,7 @@ export default function DashboardPage() {
                       {newComplaint.category ? 'Select a service' : 'Please select a category first'}
                     </option>
                     {newComplaint.category && getServicesByCategory(newComplaint.category).map((service) => (
-                      <option key={service.id} value={service.name.toLowerCase()}>
+                      <option key={service.id} value={service.id}>
                         {service.name}
                       </option>
                     ))}
@@ -494,6 +595,81 @@ export default function DashboardPage() {
                 </div>
               </form>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Complaint Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Edit Complaint</h2>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              handleUpdateComplaint();
+            }}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.title}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description *
+                  </label>
+                  <textarea
+                    value={editForm.description}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                    rows={4}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Priority
+                  </label>
+                  <select
+                    value={editForm.priority}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, priority: e.target.value as any }))}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex space-x-3 mt-6">
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  Update Complaint
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditingComplaint(null);
+                  }}
+                  className="flex-1 border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
     // Validate service exists in the allowed services
     const allowedServices = SERVICES.map(service => service.id);
     
-    if (!allowedServices.includes(service.toLowerCase())) {
+    if (!allowedServices.includes(service)) {
       return NextResponse.json(
         { error: 'Invalid service selected' },
         { status: 400 }
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
       student: student._id,
       title,
       description,
-      service: service.toLowerCase(),
+      service,
       priority,
     });
 
